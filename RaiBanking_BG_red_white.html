@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="RaiBanking" />
+  <title>RaiBanking</title>
+  <style>
+    :root{
+      --red:#d71920; --red-dark:#a90f15; --soft-red:#fff0f1;
+      --text:#2b2f38; --muted:#7b8290; --line:#edf0f5;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;
+      background:#fff; color:var(--text); min-height:100vh;
+      padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+    }
+    .app{max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:92px;position:relative;overflow:hidden}
+    .top{display:flex;align-items:center;gap:12px;padding:16px 0 14px}
+    .avatar{width:48px;height:48px;border-radius:50%;background:var(--soft-red);color:var(--red);display:grid;place-items:center;font-weight:800;font-size:18px}
+    .search{flex:1;height:48px;border:1px solid #e2e5eb;border-radius:24px;display:flex;align-items:center;justify-content:center;color:#9aa0a9;font-size:17px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.03) inset}
+    .bell,.profile{color:var(--red);font-size:28px;line-height:1}
+    .tabs{display:flex;gap:12px;margin:14px 0 20px}
+    .tab{border-radius:24px;padding:13px 22px;background:#f8f8f8;color:#6c7280;font-weight:700;font-size:18px;display:flex;gap:8px;align-items:center}
+    .tab.active{background:var(--red);color:white;box-shadow:0 8px 18px rgba(215,25,32,.22)}
+    .cards{display:flex;gap:14px;overflow-x:auto;padding:2px 0 16px;scrollbar-width:none}
+    .cards::-webkit-scrollbar{display:none}
+    .account-card{min-width:150px;border:1px solid #f0c5c8;border-radius:14px;background:white;overflow:hidden;box-shadow:0 3px 12px rgba(180,0,0,.08)}
+    .account-card.selected{border:2px solid var(--red)}
+    .card-top{height:94px;background:linear-gradient(135deg,rgba(255,255,255,.25) 0 25%,transparent 25%),linear-gradient(45deg,var(--red),#ff5a61);display:grid;place-items:center;color:white;font-size:42px}
+    .card-info{padding:10px 10px 12px;font-weight:700;color:#343842}
+    .small{font-size:13px;color:#59606d;margin-top:5px}
+    .money{font-size:20px;color:#111827;margin-top:6px;font-weight:900}
+    .bar{height:5px;background:var(--red);border-radius:5px;margin-top:10px}
+    .section-head{display:flex;align-items:center;justify-content:space-between;margin:22px 8px 12px;color:var(--red);font-size:22px;font-weight:700}
+    .eye{font-size:24px}
+    .transactions{padding:0 4px}
+    .tx{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0}
+    .tx-left{display:flex;gap:16px;align-items:center;min-width:0}
+    .circle{width:52px;height:52px;border-radius:50%;background:var(--soft-red);color:var(--red);display:grid;place-items:center;font-size:26px;flex:none}
+    .tx-title{color:#273042;font-size:17px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+    .tx-sub{color:#465063;font-size:14px;margin-top:5px;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
+    .tx-right{text-align:right;flex:none}
+    .amount{color:#273042;font-size:17px;font-weight:900;margin-bottom:8px}
+    .date{color:#465063;font-size:15px}
+    .promo{margin:20px 0 0;height:122px;border-radius:14px;background:linear-gradient(110deg,#fff2f3 0 55%,rgba(255,255,255,.2) 55%),linear-gradient(135deg,#ffb3b7,#d71920);border:1px solid #ffd5d8;padding:20px;position:relative;overflow:hidden}
+    .promo-title{font-size:22px;line-height:1.08;color:#303848;font-weight:800;max-width:240px}
+    .promo-btn{margin-top:14px;background:var(--red);color:white;border-radius:22px;padding:8px 22px;display:inline-block;font-size:17px;font-weight:700}
+    .floating{position:absolute;right:20px;bottom:16px;width:66px;height:66px;border-radius:50%;background:var(--red);color:white;display:grid;place-items:center;font-size:32px;box-shadow:0 12px 26px rgba(215,25,32,.3)}
+    .bottom{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(430px,100%);padding:8px 10px calc(env(safe-area-inset-bottom) + 7px);background:white;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);box-shadow:0 -8px 20px rgba(0,0,0,.04)}
+    .nav{text-align:center;font-size:12px;font-weight:700;color:#69707f}
+    .nav.active{color:var(--red)}
+    .nav span{display:block;font-size:25px;margin-bottom:3px}
+    .demo-note{text-align:center;color:#b9bec8;font-size:11px;margin:12px 0 4px}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div class="avatar">ВБ</div>
+      <div class="search">Как да ви помогна?</div>
+      <div class="bell">♧</div>
+      <div class="profile">♡</div>
+    </header>
+
+    <section class="tabs">
+      <div class="tab active">▣ Начало</div>
+      <div class="tab">⇄ На път</div>
+    </section>
+
+    <section class="cards">
+      <div class="account-card selected">
+        <div class="card-top">▢</div>
+        <div class="card-info">
+          Разплащателна...
+          <div class="small">BG84 **95 50</div>
+          <div class="money">2 000 000 000 EUR</div>
+          <div class="money">3 911 660 000 BGN</div>
+          <div class="bar"></div>
+        </div>
+      </div>
+
+      <div class="account-card">
+        <div class="card-top">▢</div>
+        <div class="card-info">
+          Разплащателна...
+          <div class="small">BG79 **07 06</div>
+          <div class="money">9,17 EUR</div>
+          <div class="money">17,93 BGN</div>
+        </div>
+      </div>
+
+      <div class="account-card">
+        <div class="card-top">▢</div>
+        <div class="card-info">
+          Разплащателна...
+          <div class="small">BG29 **07 00</div>
+          <div class="money">0,00 EUR</div>
+          <div class="money">0,00 BGN</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-head">
+      <div>Последни трансакции ˄</div>
+      <div>Баланс <span class="eye">◉</span></div>
+    </section>
+
+    <section class="transactions">
+      <div class="tx">
+        <div class="tx-left"><div class="circle">⇄</div><div><div class="tx-title">VMB IT</div><div class="tx-sub">Входящ превод SEPA</div></div></div>
+        <div class="tx-right"><div class="amount">+2 000 000 000 EUR</div><div class="date">08/06</div></div>
+      </div>
+
+      <div class="tx">
+        <div class="tx-left"><div class="circle">⇄</div><div><div class="tx-title">Такса обслужване</div><div class="tx-sub">Месечна такса</div></div></div>
+        <div class="tx-right"><div class="amount">-3,00 EUR</div><div class="date">05/06</div></div>
+      </div>
+
+      <div class="tx">
+        <div class="tx-left"><div class="circle">⇄</div><div><div class="tx-title">Нотариус Евгения Братоева</div><div class="tx-sub">Изходящ превод SEPA</div></div></div>
+        <div class="tx-right"><div class="amount">-294,41 EUR</div><div class="date">22/05</div></div>
+      </div>
+
+      <div class="tx">
+        <div class="tx-left"><div class="circle">⇄</div><div><div class="tx-title">Веселин Милчев Братанов</div><div class="tx-sub">Превод</div></div></div>
+        <div class="tx-right"><div class="amount">-8 000,00 EUR</div><div class="date">18/05</div></div>
+      </div>
+    </section>
+
+    <section class="promo">
+      <div class="promo-title">Предварително одобрение на бизнес кредит</div>
+      <div class="promo-btn">Виж повече</div>
+      <div class="floating">⇄</div>
+    </section>
+
+    <div class="demo-note">Демо прототип • Не е свързано с банка</div>
+
+    <nav class="bottom">
+      <div class="nav active"><span>⌂</span>Начало</div>
+      <div class="nav"><span>▦</span>Продукти</div>
+      <div class="nav"><span>⇄</span>Преводи</div>
+      <div class="nav"><span>♨</span>Битови</div>
+      <div class="nav"><span>☰</span>Повече</div>
+    </nav>
+  </main>
+</body>
+</html>
